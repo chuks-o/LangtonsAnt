@@ -7,77 +7,57 @@ export const useAnt = (
 ): {
   allTiles: ReadonlyArray<number>
 } => {
-  const ant = '🔴'
   const tiles = unref(tilesRef)
   const allTiles: ReadonlyArray<number> = [...Array(100).keys()]
   const currentPosition: Ref<number> = ref(45)
-
   let timeoutId: null | ReturnType<typeof setTimeout> = null
 
   const moveAnt = () => {
     clearTimeout(Number(timeoutId))
 
-    const v = unref(currentPosition)
-    const tileChildElement = tiles[v].firstElementChild
-
-    if (tileChildElement) tileChildElement.innerHTML = ant
-
     timeoutId = setTimeout(() => {
-      removeAnt(v)
-      toggleTileBackground()
       setNextRandomPosition()
-
       moveAnt()
-    }, 800)
-  }
-
-  const toggleTileBackground = () => {
-    const v = unref(currentPosition)
-
-    if (tiles[v].classList.contains('visited')) {
-      tiles[v].classList.remove('visited')
-    } else {
-      tiles[v].classList.add('visited')
-    }
-  }
-
-  const removeAnt = (i: number) => {
-    const tileChildElement = tiles[i].firstElementChild
-    if (tileChildElement) tileChildElement.innerHTML = ''
+    }, 500)
   }
 
   const setNextRandomPosition = () => {
+    const oldPosition = unref(currentPosition)
+    tiles[oldPosition].firstElementChild?.classList.add('d-none')
+    tiles[oldPosition].classList.toggle('visited')
+
     const ps = getNextPossiblePositions()
     currentPosition.value = ps[Math.floor(Math.random() * ps.length)]
+
+    tiles[currentPosition.value].firstElementChild?.classList.toggle('d-none')
+    changeAntDirection(oldPosition)
+  }
+
+  const changeAntDirection = (op: number) => {
+    const transformClasses = ['rotate-90', 'rotate--90', 'rotate-180']
+    const np = unref(currentPosition)
+    let transformClass = ''
+
+    tiles[np].firstElementChild?.classList.remove(...transformClasses)
+
+    if (np - op === 1) transformClass = 'rotate-90'
+    else if (np - op === -1) transformClass = 'rotate--90'
+    else if (np - op === 10) transformClass = 'rotate-180'
+    else return
+
+    tiles[np].firstElementChild?.classList.add(transformClass)
   }
 
   const getNextPossiblePositions = () => {
-    const p = unref(currentPosition)
+    const cp = unref(currentPosition)
+    let newPositions = [cp + 1, cp - 1, cp + 10, cp - 10]
+    if (cp % 10 === 9) newPositions = [cp - 1, cp + 10, cp - 10]
+    if (cp % 10 === 0) newPositions = [cp + 1, cp + 10, cp - 10]
 
-    if (p <= 9 && p % 10 === 0) {
-      return [p + 1, p + 10]
-    } else if (p <= 9 && p % 10 === 9) {
-      return [p - 1, p + 10]
-    } else if (p >= 90 && p % 10 === 9) {
-      return [p - 1, p - 10]
-    } else if (p >= 90 && p % 10 === 0) {
-      return [p - 10, p + 1]
-    } else if (p <= 9) {
-      return [p - 1, p + 1, p + 10]
-    } else if (p >= 90) {
-      return [p - 1, p + 1, p - 10]
-    } else if (p % 10 === 0) {
-      return [p + 10, p - 10, p + 1]
-    } else if (p % 10 === 9) {
-      return [p + 10, p - 10, p - 1]
-    } else {
-      return [p + 1, p - 1, p + 10, p - 10]
-    }
+    return newPositions.filter((num) => allTiles.includes(num))
   }
 
-  onMounted(() => {
-    moveAnt()
-  })
+  onMounted(() => moveAnt())
 
   return { allTiles }
 }

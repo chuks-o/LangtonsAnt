@@ -4,10 +4,9 @@ import { useAnt } from '../composables/useAnt'
 import IconExternalLink from '../components/icons/IconExternalLink.vue'
 
 const tiles = ref<HTMLElement[]>([])
-
 const { allTiles } = useAnt(tiles)
 </script>
-
+0
 <template>
   <main id="container">
     <h1>
@@ -32,7 +31,7 @@ const { allTiles } = useAnt(tiles)
         :id="i"
         :key="i"
       >
-        <span></span>
+        <img class="d-none" src="../assets/ant.png" alt="Ant image" />
       </div>
     </div>
   </main>
@@ -40,7 +39,7 @@ const { allTiles } = useAnt(tiles)
 
 <style scoped>
 #container {
-  height: 100vh;
+  min-height: 100vh;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -48,36 +47,96 @@ const { allTiles } = useAnt(tiles)
   justify-content: center;
 }
 
+#tiles {
+  width: 300px;
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+}
+
+#tiles > .visited {
+  background: rgb(53, 52, 52);
+}
+
 h1 {
   font-size: 1.8rem;
-  font-weight: 800;
   display: flex;
-  margin-bottom: 15px;
-  align-items: baseline;
+  margin-bottom: 1.2rem;
+  align-items: center;
 }
 
 a {
   text-decoration: none;
   margin-right: 10px;
+  font-weight: bold;
 }
 
-#tiles {
-  width: 650px;
-  display: grid;
-  grid-template-columns: repeat(10, minmax(0, 1fr));
+img {
+  width: 15px;
+}
+
+.d-none {
+  display: none;
 }
 
 .tile {
   background: rgb(245, 245, 245);
-  width: 65px;
-  height: 65px;
-  outline: 0.008em solid #000;
+  width: 30px;
+  height: 30px;
+  outline: 1px solid #000;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.visited {
-  background: rgb(46, 44, 44);
+.rotate-90 {
+  transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -webkit-transform: rotate(90deg);
+}
+
+.rotate--90 {
+  transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -webkit-transform: rotate(-90deg);
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+}
+
+@media (min-width: 768px) {
+  #tiles {
+    display: grid;
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+    width: 500px;
+  }
+
+  .tile {
+    width: 50px;
+    height: 50px;
+  }
+
+  img {
+    width: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  #tiles {
+    display: grid;
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+    width: 600px;
+  }
+
+  .tile {
+    width: 60px;
+    height: 60px;
+  }
+
+  img {
+    width: 25px;
+  }
 }
 </style>
